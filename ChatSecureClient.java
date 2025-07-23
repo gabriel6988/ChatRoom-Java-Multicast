@@ -39,21 +39,31 @@ public class ChatSecureClient {
       PrintWriter out = new PrintWriter(socket.getOutputStream(), true); // Envio de dados ao servidor
       BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream())); // Recebimento de dados
 
-      System.out.println("Conectado ao servidor. Digite suas mensagens:");
+      // Lê o nome do cliente
+      System.out.print("Digite seu nome: ");
+      String clientName = userInput.readLine();
+      out.println(clientName);
+
+      System.out.println("Servidor: Conectado ao servidor como " + clientName + ". Digite suas mensagens (ou 'exit' para encerrar):");
 
       // Loop principal de comunicação
       String input;
       while ((input = userInput.readLine()) != null) {
-      // Envia a mensagem digitada pelo usuário ao servidor
-      out.println(input);
-      // Exibe a resposta recebida do servidor
-      System.out.println("Resposta do servidor: " + in.readLine()); 
+        // Caso o usuário insira "exit", ele saíra do ChatRoom
+        if (input.equalsIgnoreCase("exit")) {
+          out.println(input);
+          System.out.println("Servidor: Você saiu do chat. Até mais!");
+          in.close();
+          out.close();
+          break;
+        }
+        out.println(input); // Envia a mensagem digitada pelo usuário ao servidor
+        System.out.println("Servidor: " + in.readLine()); // Exibe a resposta recebida do servidor
       }
-      in.close();
-      out.close();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-    } finally {
+      System.out.println("Erro no cliente: " + e.getMessage());
+    } 
+    finally {
       if (socket != null) {
         socket.close();
       }

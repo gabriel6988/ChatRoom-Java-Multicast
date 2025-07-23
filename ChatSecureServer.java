@@ -26,8 +26,7 @@ public class ChatSecureServer {
     SSLServerSocket serverSocket = null;
 
     try {
-      // Carrega o arquivo de keystore que contém o certificado e a chave privada do
-      // servidor
+      // Carrega o arquivo de keystore que contém o certificado e a chave privada do servidor
       KeyStore keyStore = KeyStore.getInstance("JKS");
       keyStore.load(new FileInputStream("keystore.jks"), "shulambs".toCharArray());
 
@@ -83,36 +82,38 @@ public class ChatSecureServer {
 // Classe que gerencia a comunicação com um cliente específico
 class ClientHandler implements Runnable {
   private final Socket clientSocket;
-
+  private String clientName;
   public ClientHandler(Socket socket) {
     this.clientSocket = socket;
   }
 
   @Override
   public void run() {
-
-    // Utilizando try-catch com auto-close, ou seja, o BufferedReader
-    // e o PrintWriter serão automaticamente fechados após o bloco try-catch
+    // Utilizando try-catch com auto-close, ou seja, o BufferedReader e o PrintWriter serão automaticamente fechados após o bloco try-catch
     try (
-        BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-
+    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+      clientName = in.readLine(); // Lê o nome do cliente;
+      System.out.println("Servidor: " + clientName + " entrou no chat.");
+      
       String message;
       // Lê mensagens do cliente até que ele desconecte
       while ((message = in.readLine()) != null) {
-        System.out.println("Mensagem recebida: " + message);
+        if(message.equalsIgnoreCase("exit")){
+          System.out.println("Servidor: " + clientName + " desconectou.");
+          break;
+        }
+        System.out.println(clientName + ": " + message);
         out.println(message.toUpperCase());
       }
-    } catch (IOException e) {
-      System.out.println(e.getMessage());
-    } finally {
+    }
+    catch (IOException e) {System.out.println(e.getMessage());} 
+    finally {
       try {
         // Fecha a conexão com o cliente
         clientSocket.close();
         ChatSecureServer.decrementClientCount();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      } catch (IOException e) {e.printStackTrace();}
     }
   }
 }
