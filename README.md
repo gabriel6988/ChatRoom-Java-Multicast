@@ -17,6 +17,11 @@ O projeto é uma aplicação em Java que implementa um sistema de chat utilizand
 * Terminal ou IDE (como VS Code ou IntelliJ).
 
 ## Como executar
-1. Compile os arquivos: javac ChatSecureServer.java ChatSecureClient.java
-2. Inicie o servidor: java ChatSecureServer
-3. Em outro terminal, inicie o cliente: java ChatSecureClient
+1. Compile os arquivos: `javac ChatSecureServer.java ChatSecureClient.java`
+2. Gere um keystore: `keytool -genkeypair -alias serverkey \
+  -keyalg RSA -keysize 2048 \
+  -keystore keystore.jks \
+  -validity 365 \
+  -storepass shulambs`
+3. Inicie o servidor: `java ChatSecureServer`
+4. Em outro terminal, inicie o cliente: `java ChatSecureClient`
